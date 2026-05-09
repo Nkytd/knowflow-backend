@@ -34,7 +34,7 @@ knowflow:
   security:
     mock-login-enabled: false
     jwt:
-      secret: "knowflow-super-secret-key-for-jwt-signing-please-change"
+      secret: ${KNOWFLOW_JWT_SECRET:knowflow-super-secret-key-for-jwt-signing-please-change}
       expiration-minutes: 1440
   parser:
     messaging:
