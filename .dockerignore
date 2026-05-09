@@ -1,0 +1,12 @@
+target
+.git
+.github
+.idea
+.run
+data
+*.iml
+*.log
+README.md
+LOCAL_SETUP.md
+docs
+scripts

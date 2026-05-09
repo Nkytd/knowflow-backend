@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${KNOWFLOW_DB_HOST:localhost}:${KNOWFLOW_DB_PORT:3306}/knowflow?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: ${KNOWFLOW_DB_USERNAME:root}
+    password: ${KNOWFLOW_DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${KNOWFLOW_REDIS_HOST:localhost}
+      port: ${KNOWFLOW_REDIS_PORT:6379}
+      database: ${KNOWFLOW_REDIS_DATABASE:0}
+  rabbitmq:
+    host: ${KNOWFLOW_RABBITMQ_HOST:localhost}
+    port: ${KNOWFLOW_RABBITMQ_PORT:5672}
+    username: ${KNOWFLOW_RABBITMQ_USERNAME:guest}
+    password: ${KNOWFLOW_RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        prefetch: ${KNOWFLOW_RABBITMQ_LISTENER_PREFETCH:1}
+        concurrency: ${KNOWFLOW_RABBITMQ_LISTENER_CONCURRENCY:1}
+        max-concurrency: ${KNOWFLOW_RABBITMQ_LISTENER_MAX_CONCURRENCY:2}
+        default-requeue-rejected: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+knowflow:
+  parser:
+    messaging:
+      mode: ${KNOWFLOW_PARSE_MESSAGING_MODE:rabbit}
+  storage:
+    type: ${KNOWFLOW_STORAGE_TYPE:minio}
+    local:
+      base-path: ./data/uploads
+  qa:
+    top-k: 5
+    min-recall-score: 0.65
+    lexical-weight: ${KNOWFLOW_QA_LEXICAL_WEIGHT:0.55}
+    vector-weight: ${KNOWFLOW_QA_VECTOR_WEIGHT:0.45}
+    min-vector-score: ${KNOWFLOW_QA_MIN_VECTOR_SCORE:0.12}
+    low-confidence-handoff-threshold: 0.50

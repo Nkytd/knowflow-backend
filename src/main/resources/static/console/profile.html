@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 用户中心</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+    <header
+            class="console-header"
+            data-console-shell
+            data-page-key="profile"
+            data-kicker="用户中心"
+            data-title="个人资料与安全"
+            data-description="查看不可变账号信息，维护年龄、性别、邮箱等可编辑资料，并修改登录密码。"
+            data-session-hint="请先登录后查看用户中心。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">访问登录</span>
+            <h2>登录后查看用户中心</h2>
+            <p>如果你已经在其它页面登录，刷新后会自动进入用户中心。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="Tenant@123" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" hidden>
+        <section class="workspace-grid profile-single-grid">
+            <article class="panel profile-panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">用户信息</span>
+                        <h3>个人资料</h3>
+                    </div>
+                    <div class="profile-header-actions">
+                        <span class="panel-caption">账号、编号、角色等注册后不可更改；年龄、性别、邮箱、手机号可按需维护。</span>
+                        <button id="backButton" class="ghost-button" type="button">返回上一页</button>
+                    </div>
+                </div>
+
+                <div id="readonlyProfileInfo" class="profile-readonly-grid"></div>
+
+                <form id="profileForm" class="login-form profile-edit-form">
+                    <div class="form-grid">
+                        <label class="field">
+                            <span>姓名</span>
+                            <input id="realNameInput" type="text" placeholder="可不填">
+                        </label>
+                        <label class="field">
+                            <span>年龄</span>
+                            <input id="ageInput" type="number" min="0" max="150" placeholder="可不填">
+                        </label>
+                        <label class="field">
+                            <span>性别</span>
+                            <select id="genderInput">
+                                <option value="">不填写</option>
+                                <option value="MALE">男</option>
+                                <option value="FEMALE">女</option>
+                                <option value="OTHER">其他</option>
+                            </select>
+                        </label>
+                        <label class="field">
+                            <span>邮箱</span>
+                            <input id="emailInput" type="email" placeholder="可不填">
+                        </label>
+                        <label class="field full-span">
+                            <span>手机号</span>
+                            <input id="phoneInput" type="text" placeholder="可不填">
+                        </label>
+                    </div>
+                    <button id="saveProfileButton" class="primary-button" type="submit">保存资料</button>
+                </form>
+
+                <div class="muted-divider"></div>
+
+                <form id="passwordForm" class="login-form profile-password-form">
+                    <div class="panel-subheader">
+                        <div>
+                            <span class="panel-kicker">密码安全</span>
+                            <h3>修改密码</h3>
+                        </div>
+                        <span class="panel-caption">旧密码不会被系统明文保存；点击眼睛按钮只会显示你当前输入的密码。</span>
+                    </div>
+                    <div class="form-grid">
+                        <label class="field full-span">
+                            <span>旧密码</span>
+                            <div class="password-eye-field">
+                                <input id="oldPasswordInput" type="password" placeholder="请输入当前密码" autocomplete="current-password" required>
+                                <button id="oldPasswordToggle" class="password-eye-button" type="button" aria-label="显示旧密码">👁</button>
+                            </div>
+                            <small class="field-note">请输入当前正在使用的密码。</small>
+                        </label>
+                        <label class="field">
+                            <span>新密码</span>
+                            <input id="newPasswordInput" type="password" placeholder="请输入新密码" autocomplete="new-password" required>
+                        </label>
+                        <label class="field">
+                            <span>确认新密码</span>
+                            <input id="confirmPasswordInput" type="password" placeholder="再次输入新密码" autocomplete="new-password" required>
+                        </label>
+                    </div>
+                    <button id="changePasswordButton" class="primary-button" type="submit">确认修改密码</button>
+                </form>
+            </article>
+        </section>
+    </main>
+</div>
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/profile.js"></script>
+</body>
+</html>

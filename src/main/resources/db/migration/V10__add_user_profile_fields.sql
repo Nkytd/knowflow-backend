@@ -1,0 +1,2 @@
+ALTER TABLE user_account ADD COLUMN age INT NULL;
+ALTER TABLE user_account ADD COLUMN gender VARCHAR(16) NULL;

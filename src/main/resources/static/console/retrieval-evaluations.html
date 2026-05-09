@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 检索评估台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+    <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="retrieval-evaluations"
+        data-kicker="RAG 质量验证"
+        data-title="检索评估台"
+        data-title-help-kicker="质量评估"
+        data-title-help-title="把“检索变好了”变成可重复的数据"
+        data-title-help-description="用固定样本集运行检索回归，观察通过率、Recall@K、Top1 命中率、无命中准确率和失败原因。"
+        data-title-help-highlight-title="适合演示的亮点"
+        data-title-help-highlight="在页面上维护评估样本、执行一轮评估、查看每条 case 的召回证据和 query variants，能把 RAG 优化讲得更有依据。"
+        data-session-hint="请先登录后管理检索评估。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录检索评估台</h2>
+            <p>租户管理员或知识运营登录后，可维护评估样本并运行 RAG 检索质量回归。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="Tenant@123" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并进入评估台</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid retrieval-eval-filter-grid">
+                <label class="field">
+                    <span>知识库</span>
+                    <select id="knowledgeBaseFilter">
+                        <option value="">全部知识库</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>关键词</span>
+                    <input id="keywordFilter" type="text" placeholder="样本名称或问题">
+                </label>
+                <label class="field">
+                    <span>启用状态</span>
+                    <select id="enabledFilter">
+                        <option value="">全部样本</option>
+                        <option value="true">仅启用</option>
+                        <option value="false">已停用</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>运行 TopK</span>
+                    <input id="runTopKInput" type="number" min="1" max="20" placeholder="默认按样本">
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <button id="searchButton" class="primary-button" type="button">查询样本</button>
+                <button id="runEvaluationButton" class="navy-button" type="button">运行评估</button>
+                <button id="resetButton" class="ghost-button" type="button">重置</button>
+            </div>
+        </section>
+
+        <section class="metric-grid retrieval-eval-metrics">
+            <article class="metric-card">
+                <span>最近通过率</span>
+                <strong id="metricPassRate">--</strong>
+                <p id="metricPassMeta">暂无运行记录</p>
+            </article>
+            <article class="metric-card">
+                <span>Recall@K</span>
+                <strong id="metricRecallAtK">--</strong>
+                <p>期望文档在 TopK 内的比例</p>
+            </article>
+            <article class="metric-card">
+                <span>Top1 命中率</span>
+                <strong id="metricTop1HitRate">--</strong>
+                <p>首条证据是否命中预期文档</p>
+            </article>
+            <article class="metric-card">
+                <span>无命中准确率</span>
+                <strong id="metricNoHitAccuracy">--</strong>
+                <p>不可回答问题是否正确兜底</p>
+            </article>
+        </section>
+
+        <section class="workspace-grid retrieval-eval-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">评估样本</span>
+                        <h3>检索评估集</h3>
+                    </div>
+                    <span id="casePageMeta" class="panel-caption">加载中</span>
+                </div>
+                <div id="caseTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="casePaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevCasePageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextCasePageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">新增样本</span>
+                        <h3>创建评估 Case</h3>
+                    </div>
+                    <span class="panel-caption">用固定问题和预期结果沉淀回归样本</span>
+                </div>
+                <form id="caseForm" class="section-stack">
+                    <div class="form-grid">
+                        <label class="field">
+                            <span>知识库</span>
+                            <select id="caseKnowledgeBaseSelect" required></select>
+                        </label>
+                        <label class="field">
+                            <span>预期状态</span>
+                            <select id="caseExpectedStatusSelect">
+                                <option value="SUCCESS">应命中</option>
+                                <option value="NO_HIT">应无命中</option>
+                            </select>
+                        </label>
+                        <label class="field full-span">
+                            <span>样本名称</span>
+                            <input id="caseNameInput" type="text" placeholder="例如：Redis 数据结构直接命中" required>
+                        </label>
+                        <label class="field full-span">
+                            <span>问题</span>
+                            <textarea id="caseQuestionInput" placeholder="输入要固定回归的问题" required></textarea>
+                        </label>
+                        <label class="field">
+                            <span>预期文档 ID</span>
+                            <input id="caseExpectedDocumentIdInput" type="number" min="1" placeholder="可选">
+                        </label>
+                        <label class="field">
+                            <span>TopK</span>
+                            <input id="caseTopKInput" type="number" min="1" max="20" value="5">
+                        </label>
+                        <label class="field full-span">
+                            <span>关键词</span>
+                            <input id="caseKeywordsInput" type="text" placeholder="多个关键词用逗号分隔">
+                        </label>
+                        <label class="field full-span">
+                            <span>备注</span>
+                            <input id="caseRemarkInput" type="text" placeholder="可选：样本来源或优化目标">
+                        </label>
+                    </div>
+                    <div class="footer-actions">
+                        <button id="createCaseButton" class="primary-button" type="submit">新增评估样本</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+
+        <section class="workspace-grid retrieval-eval-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">运行记录</span>
+                        <h3>评估运行</h3>
+                    </div>
+                    <span id="runPageMeta" class="panel-caption">加载中</span>
+                </div>
+                <div id="runTable" class="table-wrap"></div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">结果明细</span>
+                        <h3>Case 结果与召回证据</h3>
+                    </div>
+                    <span id="resultMeta" class="panel-caption">选择一轮运行查看明细</span>
+                </div>
+                <div id="resultBody" class="section-stack"></div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/retrieval-evaluations.js?v=p1-retrieval-eval-20260508"></script>
+</body>
+</html>

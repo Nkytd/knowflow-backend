@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 智能问答入口</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+    <link rel="stylesheet" href="/console/workbench-user.css?v=title-hover-info-20260501">
+    <link rel="icon" href="data:,">
+</head>
+<body class="assistant-page">
+<div class="console-shell" style="max-width:none;width:100vw;margin:0;padding:8px 14px 14px;box-sizing:border-box;">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="assistant"
+        data-kicker="用户工作台"
+        data-title="智能问答入口"
+        data-description="在同一个用户入口发起知识引导问答、查看证据依据，并把未解决问题无缝升级为工单。"
+        data-title-help-kicker="用户工作台"
+        data-title-help-title="提问、核验、转人工，一条链路完成"
+        data-title-help-description="在同一个用户入口选择知识库和模型，发起知识问答，查看引用证据；当知识库无法覆盖时，把问题转交人工工单继续处理，并在后续沉淀为知识草稿。"
+        data-title-help-highlight-title="用户旅程"
+        data-title-help-highlight="1. 选择知识库 → 2. 发起问题 → 3. 查看证据 → 4. 转人工工单 → 5. 沉淀知识草稿"
+        data-session-hint="请先登录后进入智能问答入口。"
+    ></header>
+
+        <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">登录</span>
+            <h2>进入智能问答入口</h2>
+            <p>可使用演示账号 `tenant.admin` 与演示密码 `Tenant@123` 登录，也可以使用当前租户下的任意用户账号体验完整问答流程。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="请输入账号" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" class="workspace assistant-workspace" style="margin-top:0;gap:8px;" hidden>
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section id="overviewMetrics" class="stat-grid assistant-metric-grid"></section>
+
+        <section id="assistantPrimaryGrid" class="workspace-grid assistant-primary-grid" style="margin-top:0;gap:10px;align-items:stretch;">
+            <aside id="assistantSidebar" class="panel assistant-sidebar" style="margin-top:0;align-self:stretch;">
+                <div class="assistant-sidebar-head">
+                    <button id="sidebarToggleButton" class="assistant-icon-button" type="button" title="收起侧栏">☰</button>
+                    <div>
+                        <span class="panel-kicker">会话</span>
+                        <h3>历史记录</h3>
+                    </div>
+                </div>
+                <button id="createSessionButton" class="assistant-new-chat-button" type="button">新建会话</button>
+                <input id="sessionTitleInput" class="assistant-hidden-input" type="text" aria-hidden="true" tabindex="-1">
+                <select id="knowledgeBaseSelect" class="assistant-hidden-select" aria-hidden="true" tabindex="-1"></select>
+                <div id="selectedKbSummary" class="assistant-hidden-region"></div>
+                <div id="knowledgeBaseList" class="assistant-hidden-region"></div>
+                <div id="sessionListMeta" class="assistant-sidebar-meta">开始提问后，这里会展示你的会话列表。</div>
+                <div id="sessionList" class="assistant-session-list"></div>
+            </aside>
+
+            <article class="panel assistant-chat-panel" style="margin-top:0;align-self:stretch;">
+                <span id="messageMeta" class="assistant-hidden-region" hidden></span>
+                <div id="messageList" class="assistant-chat-feed"></div>
+                <button id="scrollToBottomButton" class="assistant-scroll-bottom-button" type="button" hidden aria-label="滚动到最新消息">↓</button>
+
+                <form id="askForm" class="assistant-chat-composer">
+                    <textarea id="questionInput" placeholder="输入你的问题，Enter 发送，Shift + Enter 换行。" required></textarea>
+                    <div class="assistant-composer-toolbar">
+                        <div class="assistant-composer-pickers">
+                            <details id="knowledgeBasePicker" class="assistant-kb-picker">
+                                <summary id="knowledgeBasePickerLabel">选择知识库</summary>
+                                <div id="knowledgeBasePickerMenu" class="assistant-kb-picker-menu"></div>
+                            </details>
+                            <details id="modelPicker" class="assistant-kb-picker assistant-model-picker">
+                                <summary id="modelPickerLabel">快速问答</summary>
+                                <div id="modelPickerMenu" class="assistant-kb-picker-menu assistant-model-picker-menu"></div>
+                            </details>
+                            <details id="promptSuggestionDrawer" class="assistant-kb-picker assistant-prompt-drawer assistant-prompt-picker">
+                                <summary>推荐问题</summary>
+                                <div id="promptSuggestionList" class="assistant-kb-picker-menu assistant-prompt-grid"></div>
+                            </details>
+                        </div>
+                        <button id="askButton" class="assistant-send-button" type="submit" title="发送">↑</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+
+        <section class="workspace-grid assistant-secondary-grid">
+            <article id="messageInsightPanel" class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">回答洞察</span>
+                        <h3>证据与下一步动作</h3>
+                    </div>
+                    <span class="panel-caption">查看选中回答的依据，并决定是继续使用还是转人工处理。</span>
+                </div>
+                <div id="messageDetail" class="detail-actions">
+                    <div class="empty-state">
+                        <h4>暂未选择消息</h4>
+                        <p>选择一条对话记录后，这里会展示证据依据与支持操作。</p>
+                    </div>
+                </div>
+            </article>
+
+            <article id="ticketPanel" class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">支持工单</span>
+                        <h3>我的工单</h3>
+                    </div>
+                    <span id="ticketMeta" class="panel-caption">跟踪转单进度、补充回复，并在需要时跳转后台演示完整闭环。</span>
+                </div>
+                <div id="ticketList" class="section-stack"></div>
+                <div id="ticketDetail" class="detail-actions">
+                    <div class="empty-state">
+                        <h4>暂未选择工单</h4>
+                        <p>由未解答问题生成的工单，会在这里展示用户可见时间线。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/workbench.js?v=title-hover-info-20260501"></script>
+</body>
+</html>
+

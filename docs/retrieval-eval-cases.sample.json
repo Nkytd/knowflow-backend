@@ -1,0 +1,134 @@
+[
+  {
+    "name": "Flask 启动监听地址和端口",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Flask Host Port",
+    "question": "Flask 如何指定监听地址和端口？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Flask"],
+    "expectedKeywords": ["flask", "host", "port"],
+    "expectedSnippetKeywords": ["flask run", "0.0.0.0", "5050"]
+  },
+  {
+    "name": "Flask Query String 传参",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Flask Query String",
+    "question": "Flask 里面 query string 参数怎么读取？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Flask"],
+    "expectedKeywords": ["request", "args"],
+    "expectedSnippetKeywords": ["request.args.get", "blog_id"]
+  },
+  {
+    "name": "Java 访问修饰符",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Java Modifier",
+    "question": "Java 的 public protected private 默认访问权限有什么区别？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["java"],
+    "expectedKeywords": ["public", "protected", "private"],
+    "expectedSnippetKeywords": ["public", "protected", "private"]
+  },
+  {
+    "name": "Java 多态向上转型",
+    "category": "semantic_hit",
+    "sessionTitle": "Retrieval Eval - Java Polymorphism",
+    "question": "父类引用指向子类对象以后，为什么不能直接调用子类特有方法？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["java"],
+    "expectedKeywords": ["父类", "子类"],
+    "expectedSnippetKeywords": ["向上转型", "编译类型", "运行类型"]
+  },
+  {
+    "name": "Redis 数据结构",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Redis Data Types",
+    "question": "Redis 支持哪些常见数据结构？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Redis"],
+    "expectedKeywords": ["String", "Hash", "List", "Set"],
+    "expectedSnippetKeywords": ["String", "Hash", "List", "Set"]
+  },
+  {
+    "name": "Redis Hash 类型",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Redis Hash",
+    "question": "Redis 的 Hash 类型和 Java 里的什么结构比较像？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Redis"],
+    "expectedKeywords": ["Hash", "HashMap"],
+    "expectedSnippetKeywords": ["Hash", "hashmap"]
+  },
+  {
+    "name": "World Model VMC 架构",
+    "category": "semantic_hit",
+    "sessionTitle": "Retrieval Eval - World Model VMC",
+    "question": "World Models 里的 V、M、C 三个模块分别负责什么？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["World Model"],
+    "expectedKeywords": ["V", "M", "C"],
+    "expectedSnippetKeywords": ["视觉", "记忆", "决策"]
+  },
+  {
+    "name": "World Model 噩梦训练",
+    "category": "semantic_hit",
+    "sessionTitle": "Retrieval Eval - World Model Nightmare",
+    "question": "为什么说在更混乱的噩梦环境里训练智能体会更鲁棒？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["World Model"],
+    "expectedKeywords": ["噩梦", "鲁棒"],
+    "expectedSnippetKeywords": ["高温", "噩梦", "鲁棒"]
+  },
+  {
+    "name": "Self Attention 计算顺序",
+    "category": "technical_reasoning",
+    "sessionTitle": "Retrieval Eval - Attention Order",
+    "question": "Self-Attention 里 Q@K.T@V 和 V@K.T@Q 的计算顺序有什么差异？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Self-Attention"],
+    "expectedKeywords": ["Q", "K", "V"],
+    "expectedSnippetKeywords": ["Q@K.T@V", "V@K.T@Q", "Softmax"]
+  },
+  {
+    "name": "多模态五个挑战",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Multimodal Challenges",
+    "question": "多模态机器学习主要面临哪五个挑战？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["Multimodal"],
+    "expectedKeywords": ["表征", "翻译", "对齐", "融合"],
+    "expectedSnippetKeywords": ["表征", "翻译", "对齐", "融合", "共同学习"]
+  },
+  {
+    "name": "LaTeX 求和公式",
+    "category": "direct_hit",
+    "sessionTitle": "Retrieval Eval - Latex Sum",
+    "question": "LaTeX 里面带上下限的求和符号怎么写？",
+    "expectedStatus": "SUCCESS",
+    "expectedMinSourceCount": 1,
+    "expectedSourceDocContains": ["latex"],
+    "expectedKeywords": ["sum"],
+    "expectedSnippetKeywords": ["\\sum", "limits"]
+  },
+  {
+    "name": "完全无关问题",
+    "category": "no_hit",
+    "sessionTitle": "Retrieval Eval - No Hit Mars",
+    "question": "如何提交火星基地的差旅报销申请？",
+    "expectedStatus": "NO_HIT",
+    "expectedMinSourceCount": 0,
+    "expectedSourceDocContains": [],
+    "expectedKeywords": [],
+    "expectedSnippetKeywords": []
+  }
+]

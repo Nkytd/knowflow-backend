@@ -1,0 +1,40 @@
+# Build output
+target/
+*.class
+
+# Logs and runtime output
+logs/
+*.log
+*.tmp
+
+# Local application data
+data/
+*.db
+*.mv.db
+*.trace.db
+
+# Docker Desktop / buildx local state
+.docker-temp/
+.docker-temp-admin/
+
+# IDE and local run configuration
+.idea/
+.vscode/
+.run/
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+
+# Local dependency caches
+.m2/
+.npm-cache/
+
+# OS metadata
+.DS_Store
+Thumbs.db

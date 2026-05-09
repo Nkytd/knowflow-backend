@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 运营指挥台</title>
+    <link rel="stylesheet" href="/console/dashboard.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="dashboard"
+        data-kicker="运营中枢"
+        data-title="运营看板"
+        data-title-help-kicker="运营中枢"
+        data-title-help-title="智能知识运营指挥台"
+        data-title-help-description="把问答命中、人工承压、工单闭环和知识回流放到同一张运营地图里，直接展示这个项目的业务价值。"
+        data-title-help-highlight-title="看板价值"
+        data-title-help-highlight="用于面试演示时快速说明：系统不是只做聊天，而是能观测知识命中、人工转化、工单闭环和知识回流。"
+        data-session-hint="请先登录以加载租户运营数据。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <div class="panel-kicker">控制台登录</div>
+            <h2>登录管理台</h2>
+            <p>使用租户管理员、知识运营或客服坐席账号登录，即可查看当前租户的运营看板。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" name="username" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" name="password" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并进入看板</button>
+            </form>
+            <div class="login-hint">
+                说明：页面本身可直接访问，但真正的数据请求仍然走 JWT 鉴权接口。
+            </div>
+        </div>
+    </section>
+
+    <main id="dashboardApp" class="dashboard-app" hidden>
+        <section class="toolbar">
+            <div class="toolbar-block">
+                <span class="toolbar-label">趋势窗口</span>
+                <div id="trendDaysGroup" class="pill-group">
+                    <button class="pill-button" data-trend-days="7" type="button">7 天</button>
+                    <button class="pill-button" data-trend-days="14" type="button">14 天</button>
+                    <button class="pill-button" data-trend-days="30" type="button">30 天</button>
+                </div>
+            </div>
+            <div class="toolbar-block">
+                <span class="toolbar-label">问题分析窗口</span>
+                <div id="analysisDaysGroup" class="pill-group">
+                    <button class="pill-button" data-analysis-days="30" type="button">30 天</button>
+                    <button class="pill-button" data-analysis-days="60" type="button">60 天</button>
+                    <button class="pill-button" data-analysis-days="90" type="button">90 天</button>
+                </div>
+            </div>
+            <div class="toolbar-block toolbar-block-wide">
+                <span class="toolbar-label">角色与菜单能力</span>
+                <div id="permissionTags" class="tag-cloud"></div>
+            </div>
+            <div class="toolbar-block toolbar-block-tail">
+                <span class="toolbar-label">最近刷新</span>
+                <div id="lastRefreshText" class="toolbar-value">尚未加载</div>
+            </div>
+        </section>
+
+        <section class="metric-grid" id="metricGrid"></section>
+
+        <section class="story-grid">
+            <article class="panel narrative-panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">价值叙事</div>
+                        <h3>业务价值叙事</h3>
+                    </div>
+                    <span class="panel-caption">给面试官看“为什么这个平台值得做”</span>
+                </div>
+                <div id="valueStory" class="story-list"></div>
+                <div class="panel-divider"></div>
+                <div class="panel-subheader">
+                    <h4>知识服务漏斗</h4>
+                    <span>从问题进入到知识反哺的闭环可视化</span>
+                </div>
+                <div id="funnelRail" class="funnel-rail"></div>
+            </article>
+
+            <article class="panel trend-panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">趋势观察</div>
+                        <h3>问答与闭环趋势</h3>
+                    </div>
+                    <span class="panel-caption">同一张图里观察服务量、未命中和知识回流</span>
+                </div>
+                <div id="trendLegend" class="legend-row"></div>
+                <div id="trendChart" class="trend-chart"></div>
+            </article>
+        </section>
+
+        <section class="board-grid">
+            <article class="panel table-panel" id="hotQuestionsPanel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">需求热度</div>
+                        <h3>热点问题</h3>
+                    </div>
+                    <span class="panel-caption">点击任意问题，右侧联动查看明细链路</span>
+                </div>
+                <div id="hotQuestionsTable" class="table-shell"></div>
+            </article>
+
+            <article class="panel table-panel accent-panel" id="noHitPanel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">缺口雷达</div>
+                        <h3>未命中问题分析</h3>
+                    </div>
+                    <span class="panel-caption">聚焦高频未命中、工单转化和知识补洞优先级</span>
+                </div>
+                <div id="noHitTable" class="table-shell"></div>
+            </article>
+        </section>
+
+        <section class="detail-layout">
+            <article class="panel detail-panel" id="detailPanel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-kicker">问题钻取</div>
+                        <h3>问题明细链路</h3>
+                    </div>
+                    <span class="panel-caption">问答记录、工单、知识草稿的联动视图</span>
+                </div>
+                <div id="questionDetailBody" class="detail-body">
+                    <div class="empty-state">
+                        <h4>选择一个问题开始钻取</h4>
+                        <p>点击左侧热点问题或未命中问题行，即可查看该主题下的完整处理链路。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/dashboard.js?v=dashboard-nav-parity-20260501"></script>
+</body>
+</html>
+
+
+

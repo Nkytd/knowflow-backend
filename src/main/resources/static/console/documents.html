@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 文档管理台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="documents"
+        data-kicker="文档接入"
+        data-title="文档管理台"
+        data-title-help-kicker="接入层"
+        data-title-help-title="把内容接入到系统里"
+        data-title-help-description="把 Markdown、文本或其他支持的文件上传到知识库，再沿着异步链路观察解析与向量索引状态的推进。"
+        data-title-help-highlight-title="演示亮点"
+        data-title-help-highlight="这不是只存元数据的后台页，而是真正接收文件、写入对象存储、自动创建解析任务并把状态回传到管理台的完整链路。"
+        data-session-hint="请先登录后管理文档导入与解析链路。"
+    ></header>
+
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录文档管理台</h2>
+            <p>可使用租户管理员或知识运营账号登录，例如 `tenant.admin / Tenant@123`。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="Tenant@123" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>知识库</span>
+                    <select id="knowledgeBaseFilter"></select>
+                </label>
+                <label class="field">
+                    <span>文档状态</span>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="ENABLED">启用</option>
+                        <option value="DISABLED">停用</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>解析状态</span>
+                    <select id="parseStatusFilter">
+                        <option value="">全部解析状态</option>
+                        <option value="PENDING">待处理</option>
+                        <option value="PROCESSING">处理中</option>
+                        <option value="SUCCESS">成功</option>
+                        <option value="FAILED">失败</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <span id="lastRefreshText" class="toolbar-meta">尚未加载</span>
+                <button id="searchButton" class="primary-button" type="button">查询</button>
+                <button id="resetButton" class="ghost-button" type="button">重置</button>
+            </div>
+        </section>
+
+        <section id="batchActionBar" class="context-banner" hidden></section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">文档列表</span>
+                        <h3>知识文件</h3>
+                    </div>
+                    <span id="documentPageMeta" class="panel-caption">跟踪文件状态，并可跳转到选中文档的解析任务诊断页。</span>
+                </div>
+                <div id="documentTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="documentPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">文档详情</span>
+                        <h3>当前选中文档</h3>
+                    </div>
+                    <span class="panel-caption">上传新文件、查看存储元数据，并管理当前选中的文档。</span>
+                </div>
+                <div id="documentDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>暂未选择文档</h4>
+                        <p>从左侧选择文档后，这里会展示解析状态、索引状态与任务追踪入口。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/documents.js"></script>
+</body>
+</html>
+

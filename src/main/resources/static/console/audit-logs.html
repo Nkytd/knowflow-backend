@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 操作审计日志</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="audit-logs"
+        data-kicker="操作审计"
+        data-title="操作审计日志"
+        data-description="回看关键业务动作的执行轨迹，帮助展示平台具备可追溯、可审计的企业级治理能力。"
+        data-title-help-kicker="审计追踪"
+        data-title-help-title="把关键业务动作沉淀成可回溯记录"
+        data-title-help-description="工单受理、工单解决、知识草稿审核和发布，都会自动写入审计日志，便于回看系统真实的协同过程。"
+        data-title-help-highlight-title="适合演示的亮点"
+        data-title-help-highlight="可以从日志直接跳回具体工单或草稿，展示“操作留痕 + 业务对象联动”的企业级设计。"
+        data-session-hint="请先登录后加载审计日志。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <span class="panel-kicker">访问登录</span>
+            <h2>登录审计日志台</h2>
+            <p>租户管理员、知识运营和客服坐席可查看本租户的操作留痕，辅助定位责任、复盘处理链路。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并进入审计日志台</button>
+            </form>
+        </div>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>关键词</span>
+                    <input id="keywordFilter" type="text" placeholder="对象编号、操作人、摘要">
+                </label>
+                <label class="field">
+                    <span>模块</span>
+                    <select id="moduleFilter">
+                        <option value="">全部模块</option>
+                        <option value="QA">问答</option>
+                        <option value="TICKET">工单</option>
+                        <option value="KNOWLEDGE_DRAFT">知识草稿</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>动作</span>
+                    <select id="actionFilter">
+                        <option value="">全部动作</option>
+                        <option value="HANDOFF_TO_TICKET">转工单</option>
+                        <option value="ACCEPT">接单</option>
+                        <option value="ASSIGN">改派</option>
+                        <option value="COMMENT">评论补充</option>
+                        <option value="RESOLVE">标记已解决</option>
+                        <option value="CLOSE">关闭</option>
+                        <option value="CREATE_FROM_TICKET">由工单生成</option>
+                        <option value="UPDATE">更新</option>
+                        <option value="APPROVE">审核通过</option>
+                        <option value="REJECT">驳回</option>
+                        <option value="PUBLISH">发布</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>业务类型</span>
+                    <select id="bizTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="TICKET">工单</option>
+                        <option value="KNOWLEDGE_DRAFT">知识草稿</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>执行结果</span>
+                    <select id="successFilter">
+                        <option value="">全部结果</option>
+                        <option value="true">成功</option>
+                        <option value="false">失败</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <button id="searchButton" class="primary-button" type="button">查询日志</button>
+                <button id="resetButton" class="ghost-button" type="button">重置筛选</button>
+            </div>
+        </section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">审计队列</span>
+                        <h3>日志列表</h3>
+                    </div>
+                    <span id="auditPageMeta" class="panel-caption">加载中</span>
+                </div>
+                <div id="auditTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="auditPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">审计详情</span>
+                        <h3>日志详情</h3>
+                    </div>
+                    <span class="panel-caption">查看业务对象、操作人、请求入口与失败原因</span>
+                </div>
+                <div id="auditDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>选择一条日志开始查看</h4>
+                        <p>左侧点选日志后，这里会展示完整操作详情以及对应的业务对象入口。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/audit-logs.js"></script>
+</body>
+</html>
+

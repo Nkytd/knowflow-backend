@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 死信治理台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="dead-letters"
+        data-kicker="异步治理"
+        data-title="死信治理台"
+        data-description="集中查看失败异步任务、自动重试状态与人工回放操作，让故障治理链路可见可控。"
+        data-title-help-kicker="失败治理"
+        data-title-help-title="让异步失败可见、可恢复、可解释"
+        data-title-help-description="这里集中展示解析与向量索引任务的生产化故障治理能力：死信持久化、自动重试可追踪、人工回放可操作，无需直接接触 RabbitMQ。"
+        data-title-help-highlight-title="演示亮点"
+        data-title-help-highlight="把死信治理、定时重试、人工回放、运行态快照和结果追踪汇总到同一页，更像真实生产系统。"
+        data-session-hint="请先登录后查看失败任务治理信息。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录死信治理台</h2>
+            <p>租户管理员和知识运营可以筛选死信、查看任务载荷，并对仍需介入的失败任务执行人工回放。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并加载死信记录</button>
+            </form>
+        </div>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>回放状态</span>
+                    <select id="replayStatusFilter">
+                        <option value="">全部状态</option>
+                        <option value="READY">可回放</option>
+                        <option value="MANUAL_REQUIRED">待人工处理</option>
+                        <option value="AUTO_REPLAYED">已自动回放</option>
+                        <option value="MANUAL_REPLAYED">已人工回放</option>
+                        <option value="RESOLVED">已解决</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>任务类型</span>
+                    <select id="taskTypeFilter">
+                        <option value="">全部任务类型</option>
+                        <option value="PARSE">解析</option>
+                        <option value="INDEX_VECTOR">向量索引</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>任务 ID</span>
+                    <input id="taskIdFilter" type="number" min="1" placeholder="18">
+                </label>
+                <label class="field">
+                    <span>文档 ID</span>
+                    <input id="documentIdFilter" type="number" min="1" placeholder="9">
+                </label>
+                <label class="field full-span">
+                    <span>关键词</span>
+                    <input id="keywordFilter" type="text" placeholder="按死信编号、任务编号或错误信息搜索">
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <button id="searchButton" class="primary-button" type="button">查询</button>
+                <button id="resetButton" class="ghost-button" type="button">重置</button>
+            </div>
+        </section>
+
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section class="summary-card">
+            <span class="panel-kicker">操作上下文</span>
+            <strong>失败回放能力</strong>
+            <div id="capabilityTags" class="tags"></div>
+            <p id="lastRefreshText">尚未刷新</p>
+        </section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">死信队列</span>
+                        <h3>待治理记录</h3>
+                    </div>
+                    <span id="deadLetterPageMeta" class="panel-caption">正在加载回放队列</span>
+                </div>
+                <div id="deadLetterTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="deadLetterPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">死信详情</span>
+                        <h3>运行态、载荷与回放操作</h3>
+                    </div>
+                    <span class="panel-caption">查看任务失败原因，并决定是否立即回放。</span>
+                </div>
+                <div id="deadLetterDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>选择一条失败任务开始查看</h4>
+                        <p>从左侧选择死信记录后，这里会展示运行态元数据、消息载荷与回放操作。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/dead-letters.js?v=ops-return-20260501"></script>
+</body>
+</html>
+

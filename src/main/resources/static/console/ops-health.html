@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 运维健康页</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+    <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="ops-health"
+        data-kicker="系统治理"
+        data-title="运维健康监控台"
+        data-session-hint="请先登录后查看运维健康指标。"
+        data-title-help-kicker="生产化观测"
+        data-title-help-title="用一页看清异步任务链路是否健康"
+        data-title-help-description="这里汇总任务成功率、失败率、P95 耗时、卡住任务和死信堆积，帮助面试时展示你对可观测性、故障治理和工程化稳定性的理解。"
+        data-title-help-highlight-title="演示亮点"
+        data-title-help-highlight="后端指标接口 + 管理端可视化 + 深链跳转治理页面，形成从发现问题到处理问题的闭环。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录运维健康页</h2>
+            <p>登录后可以查看异步解析任务与死信队列的运行健康度。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并加载运维指标</button>
+            </form>
+        </div>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div>
+                <span class="panel-kicker">观测窗口</span>
+                <h3>任务健康概览</h3>
+                <p id="lastRefreshText">尚未刷新</p>
+            </div>
+            <div class="toolbar-actions">
+                <button class="ghost-button range-button active" type="button" data-days="7">近 7 天</button>
+                <button class="ghost-button range-button" type="button" data-days="14">近 14 天</button>
+                <button class="ghost-button range-button" type="button" data-days="30">近 30 天</button>
+                <button class="ghost-button range-button" type="button" data-days="90">近 90 天</button>
+                <button id="opsRefreshButton" class="primary-button" type="button">刷新</button>
+            </div>
+        </section>
+
+        <section id="healthSummary" class="summary-card ops-health-summary">
+            <span class="panel-kicker">健康结论</span>
+            <strong>正在加载运维指标...</strong>
+            <p>指标加载完成后会给出风险判断和治理建议。</p>
+            <div id="healthActions" class="tags"></div>
+        </section>
+
+        <section class="detail-card ops-playbook-card">
+            <div class="section-title-row">
+                <div>
+                    <span class="panel-kicker">治理闭环</span>
+                    <strong>从发现风险到定位处理</strong>
+                    <p>这里把运维指标转成可执行动作，点击后会带上返回入口，方便处理完再回到运维健康监控台。</p>
+                </div>
+            </div>
+            <div id="opsActionChecklist" class="ops-action-grid"></div>
+        </section>
+
+        <section id="metricCards" class="ops-metric-grid"></section>
+
+        <section class="detail-card">
+            <div class="section-title-row">
+                <div>
+                    <span class="panel-kicker">AI 调用治理</span>
+                    <strong>Token、成本与模型稳定性</strong>
+                    <p id="aiUsageSummary">正在加载 AI 调用统计...</p>
+                </div>
+                <a id="qaRecordsLink" class="link-button" href="/admin/qa-records?source=ops-health">查看问答记录</a>
+            </div>
+            <div id="aiUsageCards" class="ops-dlq-grid"></div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>模型</th>
+                        <th>调用</th>
+                        <th>成功</th>
+                        <th>失败</th>
+                        <th>总 Token</th>
+                        <th>失败率</th>
+                        <th>平均生成</th>
+                        <th>估算成本</th>
+                    </tr>
+                    </thead>
+                    <tbody id="aiModelTableBody">
+                    <tr><td colspan="8">正在加载 AI 调用统计...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="detail-card">
+            <div class="section-title-row">
+                <div>
+                    <span class="panel-kicker">基础设施</span>
+                    <strong>依赖健康检查</strong>
+                    <p id="infraSummary">正在加载基础设施健康状态...</p>
+                </div>
+            </div>
+            <div id="infraHealthGrid" class="ops-infra-grid"></div>
+        </section>
+        <section class="workspace-grid ops-workspace-grid">
+            <article class="detail-card">
+                <div class="section-title-row">
+                    <div>
+                        <span class="panel-kicker">任务状态</span>
+                        <strong>状态分布</strong>
+                    </div>
+                    <a id="parseTasksLink" class="link-button" href="/admin/parse-tasks?source=ops-health">查看解析任务</a>
+                </div>
+                <div id="statusDistribution" class="ops-distribution"></div>
+            </article>
+
+            <article class="detail-card">
+                <div class="section-title-row">
+                    <div>
+                        <span class="panel-kicker">DLQ</span>
+                        <strong>死信治理快照</strong>
+                    </div>
+                    <a id="deadLettersLink" class="link-button" href="/admin/dead-letters?source=ops-health">进入死信治理</a>
+                </div>
+                <div id="dlqMetrics" class="ops-dlq-grid"></div>
+            </article>
+
+            <article class="detail-card">
+                <div class="section-title-row">
+                    <div>
+                        <span class="panel-kicker">幂等治理</span>
+                        <strong>重复消息与过期 attempt</strong>
+                    </div>
+                    <a id="taskChainLink" class="link-button" href="/admin/parse-tasks?source=ops-health">查看任务链路</a>
+                </div>
+                <div id="governanceMetrics" class="ops-dlq-grid"></div>
+            </article>
+        </section>
+
+        <section class="detail-card">
+            <div class="section-title-row">
+                <div>
+                    <span class="panel-kicker">任务类型</span>
+                    <strong>耗时与失败率明细</strong>
+                </div>
+                <a id="failedTasksLink" class="link-button" href="/admin/parse-tasks?status=FAILED&source=ops-health">查看失败任务</a>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>任务类型</th>
+                        <th>总数</th>
+                        <th>成功</th>
+                        <th>失败</th>
+                        <th>处理中</th>
+                        <th>失败率</th>
+                        <th>平均耗时</th>
+                        <th>P95 耗时</th>
+                    </tr>
+                    </thead>
+                    <tbody id="taskTypeTableBody">
+                    <tr><td colspan="8">正在加载运维指标...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/ops-health.js?v=ops-health-return-20260501"></script>
+</body>
+</html>

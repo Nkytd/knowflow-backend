@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: knowflow-backend
+  profiles:
+    active: local
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.knowflow: info
+    org.springframework.security: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [traceId=%X{traceId}] - %msg%n"
+
+knowflow:
+  security:
+    mock-login-enabled: false
+    jwt:
+      secret: "knowflow-super-secret-key-for-jwt-signing-please-change"
+      expiration-minutes: 1440
+  parser:
+    messaging:
+      mode: ${KNOWFLOW_PARSE_MESSAGING_MODE:local}
+      exchange: ${KNOWFLOW_PARSE_EXCHANGE:knowflow.parse.task.exchange}
+      queue: ${KNOWFLOW_PARSE_QUEUE:knowflow.parse.task.queue}
+      routing-key: ${KNOWFLOW_PARSE_ROUTING_KEY:knowflow.parse.task.submit}
+      dead-letter-exchange: ${KNOWFLOW_PARSE_DLX:knowflow.parse.task.dlx}
+      dead-letter-queue: ${KNOWFLOW_PARSE_DLQ:knowflow.parse.task.dlq}
+      dead-letter-routing-key: ${KNOWFLOW_PARSE_DLRK:knowflow.parse.task.dead}
+      runtime-cache-ttl-hours: ${KNOWFLOW_PARSE_RUNTIME_TTL_HOURS:24}
+      worker-lock-seconds: ${KNOWFLOW_PARSE_WORKER_LOCK_SECONDS:600}
+      stale-processing-minutes: ${KNOWFLOW_PARSE_STALE_PROCESSING_MINUTES:10}
+      startup-recovery-limit: ${KNOWFLOW_PARSE_RECOVERY_LIMIT:200}
+      auto-retry-enabled: ${KNOWFLOW_PARSE_AUTO_RETRY_ENABLED:true}
+      max-auto-retries: ${KNOWFLOW_PARSE_MAX_AUTO_RETRIES:2}
+      auto-retry-base-delay-seconds: ${KNOWFLOW_PARSE_AUTO_RETRY_BASE_DELAY_SECONDS:30}
+      auto-retry-interval-ms: ${KNOWFLOW_PARSE_AUTO_RETRY_INTERVAL_MS:15000}
+      auto-retry-batch-size: ${KNOWFLOW_PARSE_AUTO_RETRY_BATCH_SIZE:20}
+  integration:
+    llm:
+      openai:
+        enabled: ${KNOWFLOW_LLM_OPENAI_ENABLED:false}
+        base-url: ${KNOWFLOW_LLM_OPENAI_BASE_URL:}
+        api-key: ${KNOWFLOW_LLM_OPENAI_API_KEY:}
+        chat-model: ${KNOWFLOW_LLM_OPENAI_CHAT_MODEL:LongCat-Flash-Chat}
+        fast-chat-model: ${KNOWFLOW_LLM_OPENAI_FAST_CHAT_MODEL:LongCat-Flash-Chat}
+        thinking-chat-model: ${KNOWFLOW_LLM_OPENAI_THINKING_CHAT_MODEL:LongCat-Flash-Thinking-2601}
+        lite-chat-model: ${KNOWFLOW_LLM_OPENAI_LITE_CHAT_MODEL:LongCat-Flash-Lite}
+        experimental-chat-model: ${KNOWFLOW_LLM_OPENAI_EXPERIMENTAL_CHAT_MODEL:LongCat-Flash-Chat-2602-Exp}
+        embedding-model: ${KNOWFLOW_LLM_OPENAI_EMBEDDING_MODEL:}
+        connect-timeout-ms: ${KNOWFLOW_LLM_OPENAI_CONNECT_TIMEOUT_MS:5000}
+        read-timeout-ms: ${KNOWFLOW_LLM_OPENAI_READ_TIMEOUT_MS:30000}
+        max-context-chunks: ${KNOWFLOW_LLM_OPENAI_MAX_CONTEXT_CHUNKS:5}
+        max-chunk-chars: ${KNOWFLOW_LLM_OPENAI_MAX_CHUNK_CHARS:1600}
+        max-output-tokens: ${KNOWFLOW_LLM_OPENAI_MAX_OUTPUT_TOKENS:450}
+        embedding-dimensions: ${KNOWFLOW_LLM_OPENAI_EMBEDDING_DIMENSIONS:128}
+  storage:
+    type: ${KNOWFLOW_STORAGE_TYPE:local}
+    local:
+      base-path: ./data/uploads
+    minio:
+      endpoint: ${KNOWFLOW_MINIO_ENDPOINT:http://127.0.0.1:9000}
+      access-key: ${KNOWFLOW_MINIO_ACCESS_KEY:minioadmin}
+      secret-key: ${KNOWFLOW_MINIO_SECRET_KEY:minioadmin}
+      bucket: ${KNOWFLOW_MINIO_BUCKET:knowflow}
+      auto-create-bucket: ${KNOWFLOW_MINIO_AUTO_CREATE_BUCKET:true}
+  qa:
+    top-k: ${KNOWFLOW_QA_TOP_K:5}
+    min-recall-score: ${KNOWFLOW_QA_MIN_RECALL_SCORE:0.65}
+    query-expansion-enabled: ${KNOWFLOW_QA_QUERY_EXPANSION_ENABLED:true}
+    max-hits-per-document: ${KNOWFLOW_QA_MAX_HITS_PER_DOCUMENT:2}
+    document-name-boost: ${KNOWFLOW_QA_DOCUMENT_NAME_BOOST:0.10}
+    section-boost: ${KNOWFLOW_QA_SECTION_BOOST:0.05}
+    early-chunk-boost: ${KNOWFLOW_QA_EARLY_CHUNK_BOOST:0.04}
+    lexical-weight: ${KNOWFLOW_QA_LEXICAL_WEIGHT:0.58}
+    vector-weight: ${KNOWFLOW_QA_VECTOR_WEIGHT:0.42}
+    min-vector-score: ${KNOWFLOW_QA_MIN_VECTOR_SCORE:0.12}
+    strong-lexical-threshold: ${KNOWFLOW_QA_STRONG_LEXICAL_THRESHOLD:0.82}
+    low-confidence-handoff-threshold: ${KNOWFLOW_QA_LOW_CONFIDENCE_HANDOFF_THRESHOLD:0.50}

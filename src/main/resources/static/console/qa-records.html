@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 问答记录台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="qa-records"
+        data-kicker="问答可视化"
+        data-title="问答记录台"
+        data-session-hint="请先登录后加载问答记录。"
+        data-title-help-kicker="问答可视化"
+        data-title-help-title="把问答前链路补全到可回看、可追踪"
+        data-title-help-description="这里既能看 AI 是怎么答的，也能看它引用了哪些知识、是否转人工、以及后续有没有变成工单和知识草稿。"
+        data-title-help-highlight-title="适合演示的亮点"
+        data-title-help-highlight="从问答记录可直接跳到工单和草稿页，再从工单或草稿反向跳回来，展示完整业务闭环。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <span class="panel-kicker">访问登录</span>
+            <h2>登录问答记录台</h2>
+            <p>租户管理员、知识运营和客服坐席登录后，可按问题主题回看问答质量与业务转化情况。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并进入问答记录台</button>
+            </form>
+        </div>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>关键词</span>
+                    <input id="keywordFilter" type="text" placeholder="问题或答案关键词">
+                </label>
+                <label class="field">
+                    <span>知识库</span>
+                    <select id="knowledgeBaseFilter">
+                        <option value="">全部知识库</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>回答状态</span>
+                    <select id="answerStatusFilter">
+                        <option value="">全部状态</option>
+                        <option value="SUCCESS">已命中</option>
+                        <option value="NO_HIT">未命中</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>人工接入</span>
+                    <select id="handoffFilter">
+                        <option value="">全部</option>
+                        <option value="true">需要人工接入</option>
+                        <option value="false">智能问答独立完成</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>会话 ID</span>
+                    <input id="sessionIdFilter" type="number" min="1" placeholder="例如 12">
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <button id="searchButton" class="primary-button" type="button">查询记录</button>
+                <button id="resetButton" class="ghost-button" type="button">重置筛选</button>
+            </div>
+        </section>
+
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section class="workspace-grid">
+            <article id="qaQueuePanel" class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">问答队列</span>
+                        <h3>问答记录列表</h3>
+                    </div>
+                    <span id="qaPageMeta" class="panel-caption">加载中</span>
+                </div>
+                <div id="qaTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="qaPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">问答详情</span>
+                        <h3>问答详情与业务链路</h3>
+                    </div>
+                    <span class="panel-caption">查看答案、召回来源、人工转单与知识回流结果</span>
+                </div>
+                <div id="qaDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>选择一条问答记录开始查看</h4>
+                        <p>左侧点选记录后，这里会联动展示问答内容、召回来源和后续业务动作。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/qa-records.js?v=ops-return-20260501"></script>
+</body>
+</html>
+
+

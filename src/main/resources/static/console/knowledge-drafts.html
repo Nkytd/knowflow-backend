@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 知识草稿台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="knowledge-drafts"
+        data-kicker="知识回流"
+        data-title="知识草稿台"
+        data-description="把工单处理经验整理成结构化知识草稿，并完成审核、发布与回流。"
+        data-title-help-kicker="知识回流"
+        data-title-help-title="把工单经验转成可复用的知识资产"
+        data-title-help-description="从草稿编辑到审核发布，完整展示这个平台如何把一次人工处理，变成后续 AI 可复用的知识能力。"
+        data-title-help-highlight-title="适合演示的亮点"
+        data-title-help-highlight="支持从工单页或运营看板深链打开具体草稿，并继续审核、发布到知识库。"
+        data-session-hint="请先登录后加载知识草稿。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <div class="login-card">
+            <span class="panel-kicker">工作台登录</span>
+            <h2>登录知识草稿台</h2>
+            <p>租户管理员、知识运营和客服坐席都可以查看草稿；审核和发布动作面向租户管理员与知识运营开放。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="knowledge.operator" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="请输入密码" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录并进入草稿台</button>
+            </form>
+        </div>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>知识库</span>
+                    <select id="knowledgeBaseFilter">
+                        <option value="">全部知识库</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>状态</span>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="PENDING_REVIEW">待审核</option>
+                        <option value="APPROVED">已通过</option>
+                        <option value="REJECTED">已驳回</option>
+                        <option value="PUBLISHED">已发布</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>草稿类型</span>
+                    <select id="draftTypeFilter">
+                        <option value="">全部类型</option>
+                        <option value="FAQ">常见问答</option>
+                        <option value="ARTICLE">知识文章</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <span id="lastRefreshText" class="toolbar-meta">尚未加载</span>
+                <button id="searchButton" class="primary-button" type="button">查询草稿</button>
+                <button id="resetButton" class="ghost-button" type="button">重置筛选</button>
+            </div>
+        </section>
+
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">草稿队列</span>
+                        <h3>草稿队列</h3>
+                    </div>
+                    <span id="draftPageMeta" class="panel-caption">加载中</span>
+                </div>
+                <div id="draftTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="draftPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">草稿详情</span>
+                        <h3>草稿详情与审核发布</h3>
+                    </div>
+                    <span class="panel-caption">编辑知识内容，完成审核决策，并将其发布回知识库</span>
+                </div>
+                <div id="draftDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>选择一条草稿开始处理</h4>
+                        <p>左侧点选草稿后，这里会展示来源工单、知识内容以及审核发布动作。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/knowledge-drafts.js"></script>
+</body>
+</html>
+

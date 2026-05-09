@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 解析任务监控台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="parse-tasks"
+        data-kicker="异步链路"
+        data-title="解析任务监控台"
+        data-description="观察解析与向量索引异步链路的运行过程，查看任务快照，并在异常时执行重试治理。"
+        data-title-help-kicker="运行态可视化"
+        data-title-help-title="查看异步处理链路"
+        data-title-help-description="这一页让后台更接近真实生产系统。你可以直接看到任务类型、生命周期状态、重试次数、运行通道、心跳、排队耗时以及重试操作。"
+        data-title-help-highlight-title="业务价值"
+        data-title-help-highlight="这能说明项目不是 CRUD 加 AI 的简单拼装，而是具备后台异步处理、运行态追踪、运维可视化和故障恢复控制的完整系统。"
+        data-session-hint="请先登录后查看异步处理运行态。"
+    ></header>
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录解析任务监控台</h2>
+            <p>可使用租户管理员或知识运营账号登录，例如 `tenant.admin / Tenant@123`。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="Tenant@123" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+        <section class="toolbar">
+            <div class="filter-grid">
+                <label class="field">
+                    <span>文档 ID</span>
+                    <input id="documentIdFilter" type="number" min="1" placeholder="按文档 ID 过滤">
+                </label>
+                <label class="field">
+                    <span>状态</span>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="PENDING">待处理</option>
+                        <option value="PROCESSING">处理中</option>
+                        <option value="SUCCESS">成功</option>
+                        <option value="FAILED">失败</option>
+                    </select>
+                </label>
+                <label class="field">
+                    <span>任务类型</span>
+                    <select id="taskTypeFilter">
+                        <option value="">全部任务类型</option>
+                        <option value="PARSE">解析</option>
+                        <option value="INDEX_VECTOR">向量索引</option>
+                    </select>
+                </label>
+            </div>
+            <div class="toolbar-actions">
+                <span id="lastRefreshText" class="toolbar-meta">尚未加载</span>
+                <button id="searchButton" class="primary-button" type="button">查询</button>
+                <button id="resetButton" class="ghost-button" type="button">重置</button>
+            </div>
+        </section>
+
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">任务队列</span>
+                        <h3>解析与索引任务</h3>
+                    </div>
+                    <span id="taskPageMeta" class="panel-caption">查看任务生命周期，并选择记录钻取运行态与相关文档信息。</span>
+                </div>
+                <div id="taskTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="taskPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">任务详情</span>
+                        <h3>运行态快照</h3>
+                    </div>
+                    <span class="panel-caption">查看任务历史、传输方式、队列状态、处理节点归属、运行心跳与恢复操作。</span>
+                </div>
+                <div id="taskDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>暂未选择解析任务</h4>
+                        <p>从左侧选择任务后，这里会展示运行态细节和处理链路操作入口。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/parse-tasks.js?v=ops-return-20260501"></script>
+</body>
+</html>
+

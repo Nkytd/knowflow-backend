@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnowFlow 知识库管理台</title>
+    <link rel="stylesheet" href="/console/workbench.css?v=interaction-polish-20260508">
+</head>
+<body>
+<div class="console-shell">
+        <header
+        class="console-header shell-header"
+        data-console-shell
+        data-page-key="knowledge-bases"
+        data-kicker="知识管理"
+        data-title="知识库管理台"
+        data-session-hint="请先登录后管理租户知识库。"
+        data-title-help-kicker="后台入口"
+        data-title-help-title="统一管理知识拓扑"
+        data-title-help-description="这里是后台管理链路的第一站，可以创建知识库、完善名称与描述、控制启停状态，并继续钻取到文档层。"
+        data-title-help-highlight-title="闭环链路"
+        data-title-help-highlight="知识库 -> 文档管理 -> 解析任务 -> 死信治理。现在这一页也承担了文档统计、批量导入和失败洞察的运营入口角色。"
+    ></header>
+
+
+    <div id="statusBanner" class="status-banner" hidden></div>
+
+    <section id="loginPanel" class="login-panel">
+        <article class="login-card">
+            <span class="panel-kicker">控制台登录</span>
+            <h2>登录知识库管理台</h2>
+            <p>可使用租户管理员或知识运营账号登录，例如 `tenant.admin / Tenant@123`。</p>
+            <form id="loginForm" class="login-form">
+                <label class="field">
+                    <span>账号</span>
+                    <input id="usernameInput" type="text" placeholder="tenant.admin" autocomplete="username" required>
+                </label>
+                <label class="field">
+                    <span>密码</span>
+                    <input id="passwordInput" type="password" placeholder="Tenant@123" autocomplete="current-password" required>
+                </label>
+                <button id="loginButton" class="primary-button" type="submit">登录</button>
+            </form>
+        </article>
+    </section>
+
+    <main id="workspace" class="workspace" hidden>
+
+        <section id="contextBanner" class="context-banner" hidden></section>
+
+        <section class="workspace-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">知识库列表</span>
+                        <h3>租户目录</h3>
+                    </div>
+                    <span id="kbPageMeta" class="panel-caption">浏览并选择知识库，查看其详细信息与运行状态。</span>
+                </div>
+                <section class="toolbar embedded-toolbar kb-list-toolbar">
+                    <div class="filter-grid compact-filter-grid">
+                        <label class="field">
+                            <span>关键词</span>
+                            <input id="keywordFilter" type="text" placeholder="按编码或名称搜索">
+                        </label>
+                        <label class="field">
+                            <span>状态</span>
+                            <select id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="ENABLED">启用</option>
+                                <option value="DISABLED">停用</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button id="searchButton" class="primary-button" type="button">查询</button>
+                        <button id="resetButton" class="ghost-button" type="button">重置</button>
+                    </div>
+                </section>
+                <div id="kbTable" class="table-wrap"></div>
+                <div class="pagination">
+                    <div id="kbPaginationText" class="meta-line">暂无分页信息</div>
+                    <div class="pagination-controls">
+                        <button id="prevPageButton" class="ghost-button" type="button">上一页</button>
+                        <button id="nextPageButton" class="ghost-button" type="button">下一页</button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-kicker">知识库详情</span>
+                        <h3>当前选中空间</h3>
+                    </div>
+                    <span class="panel-caption">编辑当前记录、切换生命周期状态，并钻取到对应文档清单。</span>
+                </div>
+                <div id="kbDetailBody" class="section-stack">
+                    <div class="empty-state">
+                        <h4>暂未选择知识库</h4>
+                        <p>从左侧选择一条记录后，这里会展示元数据、统计信息与文档层入口。</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+
+<script src="/console/common.js?v=interaction-polish-20260508"></script>
+<script src="/console/knowledge-bases.js?v=kb-empty-banner-fix-20260501"></script>
+</body>
+</html>
+
