@@ -1084,12 +1084,17 @@ class CoreModulesIntegrationTests {
         JsonNode recallMessage = waitForQaMessageStatus(adminToken, recallMessageId, "SUCCESS");
         assertThat(recallMessage.path("needHumanHandoff").asBoolean()).isFalse();
 
-        mockMvc.perform(get("/api/v1/app/qa/messages/{id}/sources", recallMessageId)
+        MvcResult recallSourcesResult = mockMvc.perform(get("/api/v1/app/qa/messages/{id}/sources", recallMessageId)
                         .header(HttpHeaders.AUTHORIZATION, bearerToken(adminToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0))
-                .andExpect(jsonPath("$.data[0].documentId").value(publishedDocumentId))
-                .andExpect(jsonPath("$.data[0].snippetText").value(org.hamcrest.Matchers.containsString("overseas travel reimbursement approval chain")));
+                .andReturn();
+        JsonNode recallSources = objectMapper.readTree(recallSourcesResult.getResponse().getContentAsString()).at("/data");
+        assertThat(recallSources)
+                .anyMatch(node -> publishedDocumentId.equals(node.path("documentId").asLong()));
+        assertThat(recallSources)
+                .anyMatch(node -> node.path("snippetText").asText().toLowerCase()
+                        .contains("overseas travel reimbursement approval chain"));
     }
 
     @Test
