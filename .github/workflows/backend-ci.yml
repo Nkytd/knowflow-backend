@@ -25,3 +25,6 @@ jobs:
 
       - name: Run tests
         run: mvn -B -q test
+
+      - name: Build Docker image
+        run: docker build -t knowflow-backend:ci .

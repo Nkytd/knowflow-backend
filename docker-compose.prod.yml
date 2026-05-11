@@ -5,7 +5,7 @@ services:
       args:
         REGISTRY_PREFIX: ${REGISTRY_PREFIX:-}
     image: knowflow-backend:${KNOWFLOW_IMAGE_TAG:-latest}
-    container_name: knowflow-backend
+    container_name: ${KNOWFLOW_APP_CONTAINER_NAME:-knowflow-backend}
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
@@ -60,7 +60,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: knowflow-mysql
+    container_name: ${KNOWFLOW_MYSQL_CONTAINER_NAME:-knowflow-mysql}
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${KNOWFLOW_MYSQL_ROOT_PASSWORD}
@@ -84,7 +84,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: knowflow-redis
+    container_name: ${KNOWFLOW_REDIS_CONTAINER_NAME:-knowflow-redis}
     restart: unless-stopped
     ports:
       - "${KNOWFLOW_REDIS_HOST_PORT:-6379}:6379"
@@ -98,7 +98,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: knowflow-rabbitmq
+    container_name: ${KNOWFLOW_RABBITMQ_CONTAINER_NAME:-knowflow-rabbitmq}
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${KNOWFLOW_RABBITMQ_USERNAME:-knowflow}
@@ -116,7 +116,7 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: knowflow-minio
+    container_name: ${KNOWFLOW_MINIO_CONTAINER_NAME:-knowflow-minio}
     restart: unless-stopped
     environment:
       MINIO_ROOT_USER: ${KNOWFLOW_MINIO_ACCESS_KEY:-knowflow}

@@ -127,9 +127,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-local-ai.ps1
 
 仓库提供一个单机 Docker Compose 线上部署模板：
 
-- [.env.example](./.env.example)：环境变量模板，不包含真实密钥。
+- [.env.example](./.env.example)：环境变量模板，不包含真实密钥，支持覆盖容器名以便同机多环境部署。
 - [docker-compose.prod.yml](./docker-compose.prod.yml)：应用 + MySQL + Redis + RabbitMQ + MinIO。
-- [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)：部署、升级、备份、Nginx 反代和故障排查说明。
+- [scripts/prod-smoke-test.ps1](./scripts/prod-smoke-test.ps1)：部署后验收脚本，检查健康接口、核心页面、登录、菜单、看板和知识库列表。
+- [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)：部署、验收、升级、备份、Nginx 反代和故障排查说明。
 
 部署入口：
 
@@ -168,6 +169,8 @@ curl http://127.0.0.1:8080/actuator/health
 ```powershell
 mvn -q test
 ```
+
+GitHub Actions 的 `backend-ci` 会执行 Maven 测试，并额外构建 Docker 镜像，确保 Dockerfile 和生产镜像打包链路可用。
 
 常用专项测试：
 

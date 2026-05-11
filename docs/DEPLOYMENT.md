@@ -74,6 +74,7 @@ cp .env.example .env
 - 不要提交 `.env`。
 - 不要使用 `.env.example` 里的 `CHANGE_ME` 值上线。
 - `application.yml` 中的默认 JWT secret 只适合本地开发，线上必须使用环境变量覆盖。
+- 如果同一台机器已经有一套 KnowFlow dev 容器，建议修改 `KNOWFLOW_*_CONTAINER_NAME` 和宿主机端口，避免容器名或端口冲突。
 
 ## 4. 启动
 
@@ -113,7 +114,36 @@ http://127.0.0.1:8080/admin/dashboard
 http://127.0.0.1:8080/assistant
 ```
 
-## 5. 升级发布
+## 5. 部署验收
+
+启动后建议先执行生产 smoke test，覆盖健康接口、核心页面、登录态、菜单、运营看板和知识库列表接口：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\prod-smoke-test.ps1 `
+  -BaseUrl http://127.0.0.1:8080
+```
+
+如果部署机没有 PowerShell，也可以用下面的最小验收命令：
+
+```bash
+curl -f http://127.0.0.1:8080/actuator/health
+curl -I http://127.0.0.1:8080/admin/dashboard
+curl -I http://127.0.0.1:8080/assistant
+```
+
+smoke test 默认把报告写到 `target/prod-smoke-test-report.json`，该目录不会提交到 Git。验收通过时应至少看到：
+
+- `/actuator/health` 返回 HTTP 200。
+- `/admin/dashboard`、`/assistant`、`/swagger-ui.html` 返回 HTTP 200。
+- `tenant.admin / Tenant@123` 能登录并读取当前用户、菜单、看板概览和知识库列表。
+
+本轮本地生产 Compose 验收记录：
+
+- 镜像构建：`docker compose -f docker-compose.prod.yml --env-file target/prod-smoke.env -p knowflow-prod-smoke up -d --build` 通过。
+- 服务状态：app、MySQL、Redis、RabbitMQ、MinIO 均成功启动，MySQL/Redis/RabbitMQ healthcheck 为 healthy。
+- smoke test：`scripts/prod-smoke-test.ps1 -BaseUrl http://127.0.0.1:18080` 通过。
+
+## 6. 升级发布
 
 拉取最新代码后重新构建应用镜像：
 
@@ -124,7 +154,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build app
 
 如果数据库迁移脚本有新增版本，应用启动时 Flyway 会自动执行迁移。上线前建议先在测试环境验证 `mvn test` 和 smoke test。
 
-## 6. 停止与备份
+## 7. 停止与备份
 
 停止服务但保留数据卷：
 
@@ -146,7 +176,7 @@ docker compose -f docker-compose.prod.yml down -v
 - MinIO：对象桶数据或 volume 快照
 - `.env`：加密保存，不放入代码仓库
 
-## 7. Nginx 反向代理示例
+## 8. Nginx 反向代理示例
 
 示例配置：
 
@@ -167,10 +197,11 @@ server {
 
 生产环境建议启用 HTTPS，并将 MySQL、Redis、RabbitMQ、MinIO 管理端口限制在内网。
 
-## 8. 故障排查
+## 9. 故障排查
 
 常见问题：
 
+- Docker 启动时报 `container name is already in use`：说明同机已有同名容器。修改 `.env` 中的 `KNOWFLOW_APP_CONTAINER_NAME`、`KNOWFLOW_MYSQL_CONTAINER_NAME`、`KNOWFLOW_REDIS_CONTAINER_NAME`、`KNOWFLOW_RABBITMQ_CONTAINER_NAME`、`KNOWFLOW_MINIO_CONTAINER_NAME` 后重试。
 - 应用无法连接 MySQL：检查 `.env` 中 `KNOWFLOW_DB_HOST=mysql`、密码和容器健康状态。
 - Redis health down：检查 `KNOWFLOW_REDIS_HOST=redis`，不要使用宿主机 `127.0.0.1`。
 - RabbitMQ 消息不消费：检查 `KNOWFLOW_PARSE_MESSAGING_MODE=rabbit` 和 RabbitMQ 账号密码。
